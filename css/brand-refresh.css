@@ -246,3 +246,9 @@ h1, h2, h3 { letter-spacing: 0; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
+
+/* Keep the doctor's surname together when headings wrap. */
+.doctor-copy h2 .doctor-surname, .doctor-page-copy h1 .doctor-surname {
+  display: inline; font-size: inherit; font-weight: inherit; line-height: inherit;
+  color: inherit; margin: 0; white-space: nowrap;
+}
