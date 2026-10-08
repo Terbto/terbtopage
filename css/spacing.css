@@ -23,7 +23,45 @@ main h3 + p { margin-top: var(--space-16); }
 main :is(section,article,figure) { min-width: 0; }
 .read-together { white-space: nowrap; }
 
+/* Decorated links: underline the label, never the anchor or its symbol. */
+.site-header .brand { text-decoration: none; }
+#main a.symbol-link,
+#main a.symbol-link:is(:hover, :focus, :focus-visible, :visited, :active) {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-8);
+  max-width: 100%;
+  text-decoration: none;
+}
+.symbol-link .text-link__label { min-width: 0; }
+.symbol-link .text-link__arrow {
+  flex: 0 0 auto;
+  text-decoration: none;
+  line-height: inherit;
+}
+
+/* One quiet emoji on selected headings; leave the heading rhythm intact. */
+main .heading-with-emoji {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: clamp(8px, .23em, 12px);
+  align-items: start;
+}
+.heading-with-emoji .heading-emoji {
+  display: block;
+  width: 1em;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  font-size: .72em;
+  font-weight: 400;
+  line-height: 1.55;
+  transform: translateY(.22em);
+  text-decoration: none;
+}
+.heading-with-emoji .heading-label { min-width: 0; }
+.heading-with-emoji::after { grid-column: 1 / -1; }
+
 /* Homepage: maintain the existing sections and photograph treatment. */
+#main:has(.hero) { overflow-x: clip; } /* Clip only the full-viewport background paint at the page edge. */
 .hero { padding-block: var(--space-64) var(--space-80); gap: var(--space-48); }
 .hero .overline { margin-bottom: var(--space-24); }
 .hero-lead { margin-top: var(--space-32); }
