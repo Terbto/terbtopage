@@ -1,0 +1,30 @@
+name: Spacing visual review
+on:
+  push:
+    branches: [spacing-review-20261008]
+permissions:
+  contents: read
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - name: Install review browser
+        run: |
+          npm install --no-save --no-package-lock playwright@1.62.1
+          npx playwright install --with-deps --only-shell chromium
+      - name: Render six pages at three viewports
+        run: node qa/spacing-render.cjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: spacing-render-review
+          path: qa-results/
+          if-no-files-found: error
+          retention-days: 14
