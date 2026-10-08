@@ -1,0 +1,186 @@
+/* Shared reading rhythm. Preserve approved colors, content, photos and header. */
+:root {
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-80: 80px;
+  --space-96: 96px;
+  --section-space: var(--space-96);
+  --content-gap: var(--space-64);
+}
+
+main :is(h1,h2,h3) { letter-spacing: 0; }
+#main h1 { line-height: 1.5; }
+#main h2 { line-height: 1.55; }
+#main h3 { line-height: 1.6; }
+main :is(p,blockquote,dt,dd,figcaption) { line-height: 1.9; }
+main h2 + p { margin-top: var(--space-24); }
+main h3 + p { margin-top: var(--space-16); }
+main :is(section,article,figure) { min-width: 0; }
+.read-together { white-space: nowrap; }
+
+/* Homepage: maintain the existing sections and photograph treatment. */
+.hero { padding-block: var(--space-64) var(--space-80); gap: var(--space-48); }
+.hero .overline { margin-bottom: var(--space-24); }
+.hero-lead { margin-top: var(--space-32); }
+.hero-actions { margin-top: var(--space-32); gap: var(--space-16); }
+.care, .knowledge { padding-block: var(--section-space); }
+.section-intro, .knowledge-head { margin-bottom: var(--space-48); }
+.section-intro h2::after, .knowledge-head h2::after { margin-top: var(--space-16); }
+.care-panel { padding: var(--space-48) var(--space-32); gap: var(--space-32); }
+.care-copy .eyebrow { margin-bottom: var(--space-16); }
+.care-copy > p:not(.eyebrow) { margin-top: var(--space-24); }
+.care-copy a { margin-top: var(--space-24); line-height: 1.8; }
+.doctor-story { padding-block: var(--section-space); gap: var(--content-gap); }
+.doctor-copy .section-label { margin-bottom: var(--space-24); }
+.doctor-copy h2 > span:not(.doctor-surname) { margin-top: var(--space-16); }
+.doctor-copy blockquote { margin-top: var(--space-32); padding: var(--space-24); line-height: 1.85; }
+.doctor-credential { margin-top: var(--space-24); }
+.doctor-credential-details { margin-top: var(--space-24); }
+.doctor-credential-details p { padding-block: var(--space-16); margin: 0; }
+.doctor-story .text-link { margin-top: var(--space-32); line-height: 1.8; }
+.trust-line { margin-bottom: var(--space-48); padding: var(--space-24) var(--space-32); }
+.faq-list { gap: var(--space-24); }
+.faq-item { padding: var(--space-32); gap: var(--space-24); }
+.faq-content p { margin-top: var(--space-16); }
+.faq-content a { margin-top: var(--space-24); line-height: 1.8; }
+.visit-copy { padding-block: var(--section-space); }
+.visit dl { margin-top: var(--space-32); }
+.visit dl div { padding-block: 20px; gap: var(--space-24); }
+.visit dt, .visit dd { line-height: 1.85; }
+.visit .contact-inline-link { margin-top: var(--space-12); }
+
+/* Inner pages: the same section and heading hierarchy. */
+.inner-intro { padding-block: var(--section-space) var(--space-80); }
+.inner-kicker { margin-bottom: var(--space-16); line-height: 1.7; letter-spacing: 0; }
+.inner-lead, .privacy-lead { margin-top: var(--space-32); line-height: 1.9; }
+.general-primary, .well-child-section, .parent-question-section,
+.growth-topics, .growth-trend, .growth-bring { padding-block: var(--section-space); }
+.general-primary-grid { gap: var(--content-gap); }
+.general-primary-lead { margin-top: var(--space-24); line-height: 1.9; }
+.symptom-tags { margin-top: var(--space-24); gap: var(--space-12); }
+.symptom-tags span { padding: var(--space-8) var(--space-16); line-height: 1.65; }
+.well-child-intro { column-gap: var(--space-48); }
+.well-child-intro .inner-kicker.accent-yellow { width: fit-content; max-width: 100%; height: auto; padding: var(--space-12) var(--space-16); }
+.well-child-intro > p:last-child { margin-top: var(--space-24); line-height: 1.9; }
+.well-child-split { margin-top: var(--space-48); padding-top: var(--space-32); gap: var(--space-48); }
+.well-child-item p { margin-top: var(--space-16); line-height: 1.9; }
+.parent-question-copy > p:last-child { margin-top: var(--space-24); line-height: 1.9; }
+.parent-question-copy .inner-kicker.accent-pink { height: 96px; }
+.parent-question-section::after { top: calc(var(--section-space) + var(--space-32)); }
+.growth-topics-head { margin-bottom: var(--space-48); }
+.growth-topics-head h2, .growth-trend h2 { text-wrap: balance; }
+.growth-topics-intro { margin-top: var(--space-24); }
+.growth-symptom-grid { gap: var(--space-24); }
+.growth-symptom-card { padding: var(--space-32); }
+.growth-symptom-no { margin-bottom: var(--space-16); }
+.growth-symptom-card .symptom-tags { margin-top: var(--space-24); gap: var(--space-12); }
+.growth-symptom-card > p { margin-top: var(--space-24); line-height: 1.9; }
+.growth-trend-grid { gap: var(--content-gap); }
+.growth-trend-grid > div::after { content: none; }
+.growth-trend-grid > p { padding-top: var(--space-24); line-height: 1.9; }
+.growth-trend-mark { position: relative; width: fit-content; max-width: 100%; margin: 0 auto var(--space-32); display: grid; justify-items: center; }
+.growth-trend-mark svg { display: block; width: 264px; max-width: 100%; height: auto; overflow: visible; }
+.growth-trend-mark .inner-kicker { margin: var(--space-12) 0 0; text-align: center; }
+.growth-bring-copy h2::after { position: static; display: block; margin-top: var(--space-16); }
+.growth-bring-copy > p:last-child { margin-top: var(--space-24); line-height: 1.9; }
+.page-crosslink { padding-block: var(--space-64); }
+.page-crosslink .inner-shell { padding-top: var(--space-24); }
+.page-crosslink p { margin: 0; line-height: 1.9; }
+.page-crosslink .text-link { margin-top: var(--space-24); line-height: 1.8; }
+
+/* Doctor: markers participate in normal flow, with 20px before the heading. */
+.doctor-page { padding-block: var(--section-space); }
+.doctor-page-grid { gap: var(--content-gap); }
+.doctor-page-copy { padding-top: 0; }
+.doctor-page-copy h1 > span:not(.doctor-surname) { margin-top: var(--space-16); }
+.doctor-license { margin-top: var(--space-24); }
+.doctor-summary { margin: var(--space-24) 0 var(--space-32); line-height: 1.9; }
+.doctor-page-copy blockquote { margin-top: var(--space-32); padding: var(--space-24); line-height: 1.85; }
+.credential-list { margin-block: var(--space-32); }
+.credential-list > div { padding-block: var(--space-24); }
+.credential-list p { margin-top: var(--space-12); line-height: 1.9; }
+.doctor-real-stories { padding-block: 0 var(--section-space); }
+.doctor-story-row, .doctor-story-row.doctor-story-academic { padding-block: var(--section-space); gap: var(--content-gap); }
+.doctor-story-row.doctor-story-academic { padding-inline: var(--space-32); }
+.doctor-story-text > p:last-child { margin-top: var(--space-24); line-height: 1.9; }
+.doctor-story-care .doctor-story-text::before,
+.doctor-story-academic .doctor-story-text::before {
+  position: static; display: block; margin: 0 0 20px; transform: none;
+}
+.doctor-story-academic .doctor-story-text::after { top: 0; }
+
+/* Contact information and images. */
+.contact-page { padding-block: var(--section-space); }
+.contact-page-head { margin-bottom: var(--space-48); }
+.contact-page-address { margin-top: var(--space-32); line-height: 1.9; }
+.contact-page-map-link { margin-top: var(--space-16); line-height: 1.8; }
+.contact-page-grid { gap: var(--content-gap); }
+.contact-facts { padding-top: 0; }
+.contact-facts dl { margin-top: var(--space-32); }
+.contact-facts dl div { padding-block: var(--space-24); gap: var(--space-24); }
+.contact-facts dt, .contact-facts dd { line-height: 1.85; }
+.line-panel { padding: var(--space-32); }
+.line-panel h2 { margin-bottom: var(--space-24); }
+.line-panel p { margin-top: var(--space-24); }
+.line-open-link { margin-top: var(--space-24); line-height: 1.8; }
+.arrival { margin-top: var(--space-80); padding-top: var(--space-48); }
+.arrival-grid { margin-top: var(--space-32); gap: var(--space-32); }
+.arrival-photo figcaption { margin-top: var(--space-16); line-height: 1.8; }
+
+/* Privacy: calm reading rows, with a consistent paragraph gap. */
+.privacy-intro { padding-block: var(--section-space) var(--space-80); }
+.privacy-updated { margin-top: var(--space-24); }
+.privacy-layout { padding-top: var(--space-64); padding-bottom: var(--section-space); gap: var(--content-gap); }
+.privacy-toc strong { margin-bottom: var(--space-16); }
+.privacy-toc a { padding-block: var(--space-12); line-height: 1.8; }
+.privacy-copy section { padding-block: var(--space-32) var(--space-48); }
+.privacy-copy section:first-child { padding-top: 0; }
+.privacy-index { margin-bottom: var(--space-16); }
+.privacy-copy h2 { margin-bottom: var(--space-24); }
+.privacy-copy p { margin: 0 0 var(--space-24); line-height: 1.95; }
+.privacy-copy p:last-child { margin-bottom: 0; }
+
+@media (max-width: 860px) {
+  :root { --section-space: var(--space-80); --content-gap: var(--space-48); }
+  .care-panel { padding: var(--space-32); }
+  .privacy-layout { gap: var(--space-32); padding-top: var(--space-32); }
+}
+
+@media (max-width: 600px) {
+  :root { --section-space: var(--space-64); --content-gap: var(--space-32); }
+  .hero { padding-block: var(--space-48) var(--space-64); gap: var(--space-32); }
+  .hero .overline { margin-bottom: var(--space-24); }
+  .hero-lead, .hero-actions { margin-top: var(--space-24); }
+  .hero-actions { gap: var(--space-12); }
+  .section-intro, .knowledge-head, .growth-topics-head { margin-bottom: var(--space-32); }
+  .care-panel { padding: var(--space-32) var(--space-24); gap: var(--space-32); }
+  .care-photo { margin-top: 0; }
+  .doctor-copy .section-label { margin-bottom: var(--space-16); }
+  .doctor-copy blockquote, .doctor-page-copy blockquote { padding: var(--space-24) 20px; }
+  .trust-line { padding: var(--space-24) var(--space-16); margin-bottom: var(--space-32); }
+  .faq-item { padding: var(--space-24) var(--space-16); gap: var(--space-16); }
+  .faq-list { gap: var(--space-24); }
+  .visit dl div { padding-block: var(--space-16); gap: var(--space-16); }
+  .visit h2 { white-space: normal; }
+  .inner-intro, .privacy-intro { padding-block: var(--space-64); }
+  .inner-lead, .privacy-lead { margin-top: var(--space-32); }
+  .symptom-tags { gap: var(--space-12); }
+  .well-child-split { margin-top: var(--space-32); gap: var(--space-32); }
+  .growth-symptom-card { padding: var(--space-24) 20px; }
+  .growth-trend-grid { gap: var(--space-32); }
+  .growth-trend-mark { margin-bottom: var(--space-24); }
+  .growth-trend-mark svg { width: 232px; }
+  .doctor-story-row.doctor-story-academic { padding-inline: var(--space-24); }
+  .page-crosslink { padding-block: var(--space-48); }
+  .contact-page-head { margin-bottom: var(--space-32); }
+  .contact-facts dl div { padding-block: var(--space-24); gap: var(--space-16); }
+  .line-panel { padding: var(--space-32) var(--space-24); }
+  .arrival { margin-top: var(--space-64); padding-top: var(--space-32); }
+  .arrival-grid { gap: var(--space-32); }
+  .privacy-copy section { padding-block: var(--space-32); }
+}
