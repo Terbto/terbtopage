@@ -146,7 +146,7 @@ async function audit(page) {
                 report.actualFonts.push({selector,fonts});
               }
               await session.detach();
-              const fontPass=report.actualFonts.every(entry=>entry.fonts.some(f=>f.familyName==='IBM Plex Sans Thai'&&f.isCustomFont&&f.glyphCount>0));
+              const fontPass=report.actualFonts.every(entry=>entry.fonts.length>0&&entry.fonts.every(f=>f.familyName.startsWith('IBM Plex Sans Thai')&&f.postScriptName.startsWith('IBMPlexSansThai-')&&f.isCustomFont&&f.glyphCount>0));
               if(!p.timeline?.pass||!fontPass) report.pass=false;
               await page.evaluate(()=>window.scrollTo(0,0));
               const screenshotRect=await page.locator('.care-explorer').evaluate(e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};});
