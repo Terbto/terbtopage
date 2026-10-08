@@ -35,6 +35,65 @@ main :is(section,article,figure) { min-width: 0; }
 .care-copy .eyebrow { margin-bottom: var(--space-16); }
 .care-copy > p:not(.eyebrow) { margin-top: var(--space-24); }
 .care-copy a { margin-top: var(--space-24); line-height: 1.8; }
+/* Health and vaccination: equal-height points represent life stages, not growth. */
+.care-art.age-timeline {
+  display: grid;
+  width: min(100%, 320px);
+  height: auto;
+  min-width: 0;
+  margin: 0;
+  gap: var(--space-8);
+  justify-self: center;
+  align-self: center;
+  justify-items: center;
+  overflow: visible;
+  color: var(--green-deep);
+}
+.age-timeline-track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.age-timeline-track::before {
+  content: "";
+  position: absolute;
+  inset-inline: calc(100% / 6);
+  top: 4px;
+  height: 1px;
+  background: var(--green);
+}
+.age-timeline-track li {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-8);
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.age-timeline-dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+}
+.age-timeline-track li:nth-child(2) .age-timeline-dot { background: var(--pink); }
+.age-timeline-track li:nth-child(3) .age-timeline-dot { background: var(--yellow); }
+.age-timeline .age-timeline-caption {
+  margin: 0;
+  max-width: 100%;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+  text-align: center;
+}
 .doctor-story { padding-block: var(--section-space); gap: var(--content-gap); }
 .doctor-copy .section-label { margin-bottom: var(--space-24); }
 .doctor-copy h2 > span:not(.doctor-surname) { margin-top: var(--space-16); }
@@ -145,6 +204,14 @@ main :is(section,article,figure) { min-width: 0; }
 .privacy-copy p { margin: 0 0 var(--space-24); line-height: 1.95; }
 .privacy-copy p:last-child { margin-bottom: 0; }
 
+@media (min-width: 601px) and (max-width: 1100px) {
+  .care-art.age-timeline { gap: 4px; }
+  .age-timeline-track li { gap: 4px; font-size: 14px; }
+  .age-timeline-dot { width: 6px; height: 6px; }
+  .age-timeline-track::before { top: 3px; }
+  .age-timeline .age-timeline-caption { font-size: 12px; line-height: 1.5; }
+}
+
 @media (max-width: 860px) {
   :root { --section-space: var(--space-80); --content-gap: var(--space-48); }
   .care-panel { padding: var(--space-32); }
@@ -160,6 +227,9 @@ main :is(section,article,figure) { min-width: 0; }
   .section-intro, .knowledge-head, .growth-topics-head { margin-bottom: var(--space-32); }
   .care-panel { padding: var(--space-32) var(--space-24); gap: var(--space-32); }
   .care-photo { margin-top: 0; }
+  .care-art.age-timeline { width: min(100%, 280px); }
+  .age-timeline-track li { font-size: 14px; }
+  .age-timeline .age-timeline-caption { font-size: 12px; line-height: 1.8; }
   .doctor-copy .section-label { margin-bottom: var(--space-16); }
   .doctor-copy blockquote, .doctor-page-copy blockquote { padding: var(--space-24) 20px; }
   .trust-line { padding: var(--space-24) var(--space-16); margin-bottom: var(--space-32); }
