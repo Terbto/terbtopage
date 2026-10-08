@@ -4,6 +4,9 @@ on:
     branches: [spacing-review-20261008]
 permissions:
   contents: read
+concurrency:
+  group: spacing-review-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   render:
     runs-on: ubuntu-24.04

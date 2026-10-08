@@ -63,7 +63,7 @@ async function audit(page) {
       documentHeight: document.documentElement.scrollHeight,
       fontReady: document.fonts.status === 'loaded' && document.fonts.check('400 16px "IBM Plex Sans Thai"','เติบโตคลินิก') && document.fonts.check('600 16px "IBM Plex Sans Thai"','การเจริญเติบโต'),
       headings, paragraphs, overflow, overlaps, markers, trend,
-      images: [...document.images].map(e=>({src:e.currentSrc,complete:e.complete,naturalWidth:e.naturalWidth,naturalHeight:e.naturalHeight})),
+      images: [...document.images].filter(e=>!e.closest('[hidden]')).map(e=>({src:e.currentSrc,complete:e.complete,naturalWidth:e.naturalWidth,naturalHeight:e.naturalHeight})),
       sections: [...document.querySelectorAll('main > section')].map(e=>({element:label(e),rect:rect(e),paddingTop:getComputedStyle(e).paddingTop,paddingBottom:getComputedStyle(e).paddingBottom})),
     };
   });
@@ -104,7 +104,7 @@ async function audit(page) {
           await page.evaluate(v=>window.scrollTo(0,v),y);
           await page.waitForTimeout(45);
         }
-        await page.evaluate(()=>Promise.all([...document.images].map(i=>i.complete?Promise.resolve():new Promise(r=>{i.onload=r;i.onerror=r;}))));
+        await page.waitForFunction(()=>[...document.images].filter(i=>!i.closest('[hidden]')).every(i=>i.complete), undefined, {timeout:15000});
         await page.evaluate(()=>window.scrollTo(0,0));
         await page.waitForTimeout(450);
         const report = await audit(page);
@@ -120,9 +120,10 @@ async function audit(page) {
           for (const key of ['well','growth','sick']) {
             await page.locator('.care-tab[data-key="'+key+'"]').click();
             await page.waitForTimeout(450);
+            await page.waitForFunction(()=>[...document.images].filter(i=>!i.closest('[hidden]')).every(i=>i.complete), undefined, {timeout:15000});
             const p = await audit(page);
-            report.servicePanels.push({key,documentWidth:p.documentWidth,overflow:p.overflow,overlaps:p.overlaps});
-            if (p.documentWidth>viewport.width || p.overflow.length || p.overlaps.length) report.pass = false;
+            report.servicePanels.push({key,documentWidth:p.documentWidth,overflow:p.overflow,overlaps:p.overlaps,images:p.images});
+            if (p.documentWidth>viewport.width || p.overflow.length || p.overlaps.length || !p.images.every(i=>i.complete&&i.naturalWidth>0)) report.pass = false;
             if(key!=='sick') await page.locator('.care-explorer').screenshot({path:path.join(out,'home-care-'+key+'-'+viewport.name+'.png'),animations:'disabled'});
           }
         }
