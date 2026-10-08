@@ -63,7 +63,8 @@ async function audit(page) {
       documentHeight: document.documentElement.scrollHeight,
       fontReady: document.fonts.status === 'loaded' && document.fonts.check('400 16px "IBM Plex Sans Thai"','เติบโตคลินิก') && document.fonts.check('600 16px "IBM Plex Sans Thai"','การเจริญเติบโต'),
       headings, paragraphs, overflow, overlaps, markers, trend,
-      images: [...document.images].filter(e=>!e.closest('[hidden]')).map(e=>({src:e.currentSrc,complete:e.complete,naturalWidth:e.naturalWidth,naturalHeight:e.naturalHeight})),
+      images: [...document.images].filter(e=>!e.closest('[hidden]')).map(e=>({src:e.currentSrc,complete:e.complete,naturalWidth:e.naturalWidth,naturalHeight:e.naturalHeight,rect:rect(e)})),
+      groups: [...document.querySelectorAll('.doctor-story-academic,.arrival-grid,.well-child-intro,.parent-question-copy')].map(e=>({element:label(e),rect:rect(e),gap:getComputedStyle(e).gap,paddingInline:getComputedStyle(e).paddingInline,children:[...e.children].map(c=>({element:label(c),rect:rect(c)}))})),
       sections: [...document.querySelectorAll('main > section')].map(e=>({element:label(e),rect:rect(e),paddingTop:getComputedStyle(e).paddingTop,paddingBottom:getComputedStyle(e).paddingBottom})),
     };
   });
