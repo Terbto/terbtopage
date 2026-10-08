@@ -104,7 +104,7 @@ h1, h2, h3 { letter-spacing: 0; }
 .care-copy h3 { line-height: 1.5; }
 .care-panel[data-panel="sick"] .eyebrow { color: #a72158; }
 .care-panel[data-panel="well"] .eyebrow { color: #875612; }
-.care-copy a { text-decoration: underline; text-decoration-color: var(--panel-accent); text-underline-offset: 7px; }
+.care-copy a .text-link__label { text-decoration: underline; text-decoration-color: var(--panel-accent); text-underline-offset: 7px; }
 .art-well b { background: var(--yellow-soft); border: 2px solid var(--yellow); color: #654411; }
 .art-well b:nth-child(2) { background: var(--pink-soft); border-color: var(--pink); color: #a72158; }
 .art-well b:nth-child(3) { background: var(--green-soft); border-color: var(--green); color: var(--green-deep); }
@@ -140,7 +140,7 @@ h1, h2, h3 { letter-spacing: 0; }
 .faq-yellow .faq-no { color: var(--ink); }
 .faq-content h3 { line-height: 1.6; }
 .faq-content p { color: #465f54; line-height: 1.9; }
-.faq-content a { text-decoration: underline; text-underline-offset: 6px; }
+.faq-content a .text-link__label { text-decoration: underline; text-underline-offset: 6px; }
 .visit { background: var(--green-deep); }
 .visit h2 { line-height: 1.5; }
 .visit dt { color: #e0f3ec; font-size: 14px; }
