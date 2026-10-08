@@ -24,6 +24,7 @@ main :is(section,article,figure) { min-width: 0; }
 .read-together { white-space: nowrap; }
 
 /* Decorated links: underline the label, never the anchor or its symbol. */
+.site-header .brand { text-decoration: none; }
 #main a.symbol-link,
 #main a.symbol-link:is(:hover, :focus, :focus-visible, :visited, :active) {
   display: inline-flex;
