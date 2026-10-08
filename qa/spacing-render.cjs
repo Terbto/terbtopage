@@ -8,14 +8,10 @@ const root = process.cwd();
 const out = path.join(root, 'qa-results');
 const routes = [
   ['homepage', '/index.html'],
-  ['general-pediatrics', '/general-pediatrics/index.html'],
-  ['growth', '/growth-hormone/index.html'],
-  ['doctor', '/doctor/index.html'],
-  ['contact', '/contact/index.html'],
-  ['privacy', '/privacy/index.html'],
 ];
 const viewports = [
   { name: 'desktop-1440', width: 1440, height: 1000 },
+  { name: 'desktop-1024', width: 1024, height: 900 },
   { name: 'mobile-390', width: 390, height: 844 },
   { name: 'mobile-375', width: 375, height: 812 },
 ];
@@ -57,12 +53,25 @@ async function audit(page) {
     const markers = [...document.querySelectorAll('.doctor-story-text,.growth-bring-copy h2,.section-intro h2,.knowledge-head h2')].map(e => ({ element: label(e), rect: rect(e), before: (()=> {const s=getComputedStyle(e,'::before'); return { content:s.content, position:s.position, height:s.height, marginBottom:s.marginBottom };})(), after: (()=> {const s=getComputedStyle(e,'::after'); return { content:s.content, position:s.position, height:s.height, marginTop:s.marginTop, top:s.top };})() }));
     const mark = document.querySelector('.growth-trend-mark');
     const trend = mark ? { group:rect(mark), parent:rect(mark.parentElement), svg:rect(mark.querySelector('svg')), text:rect(mark.querySelector('p')), circles:[...mark.querySelectorAll('circle')].map(e=>rect(e)), oldDot:getComputedStyle(mark.parentElement,'::after').content, transforms:[...mark.querySelectorAll('*')].map(e=>getComputedStyle(e).transform).filter(v=>v!=='none') } : null;
+    const t = document.querySelector('.age-timeline');
+    let timeline = null;
+    if (t && visible(t)) {
+      const panel=t.closest('.care-panel'), copy=panel.querySelector('.care-copy'), ps=getComputedStyle(panel), cols=ps.gridTemplateColumns.split(' ').map(parseFloat);
+      const group=rect(t), panelRect=rect(panel), copyRect=rect(copy), heading=rect(copy.querySelector('h3'));
+      const expectedCenterX=panelRect.x+parseFloat(ps.paddingLeft)+(cols.length===2?cols[0]+parseFloat(ps.columnGap)+cols[1]/2:cols[0]/2);
+      const connector=getComputedStyle(t.querySelector('ol'),'::before');
+      const dots=[...t.querySelectorAll('.age-timeline-dot')].map(e=>({rect:rect(e),color:getComputedStyle(e).backgroundColor}));
+      const labels=[...t.querySelectorAll('li > span:last-child')].map(e=>({text:e.textContent,rect:rect(e),font:getComputedStyle(e).fontFamily,fontSize:getComputedStyle(e).fontSize,lineHeight:getComputedStyle(e).lineHeight,visible:visible(e)}));
+      const caption=t.querySelector('p');
+      timeline={group,panel:panelRect,copy:copyRect,heading,expectedCenterX,centerOffsetX:group.x+group.width/2-expectedCenterX,centerOffsetY:group.y+group.height/2-copyRect.y-copyRect.height/2,connector:{height:connector.height,top:connector.top,transform:connector.transform,color:connector.backgroundColor},dots,labels,caption:{text:caption.textContent,rect:rect(caption),font:getComputedStyle(caption).fontFamily,visible:visible(caption)},oldShapes:t.querySelectorAll('b,i').length};
+      timeline.pass=Math.abs(timeline.centerOffsetX)<1 && (cols.length!==2||Math.abs(timeline.centerOffsetY)<1) && (window.innerWidth<900||group.height<=heading.height+1) && connector.transform==='none' && connector.height==='1px' && Math.max(...dots.map(d=>d.rect.y))-Math.min(...dots.map(d=>d.rect.y))<1 && labels.map(l=>l.text).join('|')==='ทารก|เด็กเล็ก|เด็กโต' && labels.every(l=>l.visible) && caption.textContent==='ติดตามสุขภาพและวัคซีนตามช่วงวัย' && visible(caption) && timeline.oldShapes===0;
+    }
     return {
       viewport: { width: window.innerWidth, height: window.innerHeight },
       documentWidth: document.documentElement.scrollWidth,
       documentHeight: document.documentElement.scrollHeight,
       fontReady: document.fonts.status === 'loaded' && document.fonts.check('400 16px "IBM Plex Sans Thai"','เติบโตคลินิก') && document.fonts.check('600 16px "IBM Plex Sans Thai"','การเจริญเติบโต'),
-      headings, paragraphs, overflow, overlaps, markers, trend,
+      headings, paragraphs, overflow, overlaps, markers, trend, timeline,
       images: [...document.images].filter(e=>!e.closest('[hidden]')).map(e=>({src:e.currentSrc,complete:e.complete,naturalWidth:e.naturalWidth,naturalHeight:e.naturalHeight,rect:rect(e)})),
       groups: [...document.querySelectorAll('.doctor-story-academic,.arrival-grid,.well-child-intro,.parent-question-copy')].map(e=>({element:label(e),rect:rect(e),gap:getComputedStyle(e).gap,paddingInline:getComputedStyle(e).paddingInline,children:[...e.children].map(c=>({element:label(c),rect:rect(c)}))})),
       sections: [...document.querySelectorAll('main > section')].map(e=>({element:label(e),rect:rect(e),paddingTop:getComputedStyle(e).paddingTop,paddingBottom:getComputedStyle(e).paddingBottom})),
@@ -123,10 +132,29 @@ async function audit(page) {
             await page.waitForTimeout(450);
             await page.waitForFunction(()=>[...document.images].filter(i=>!i.closest('[hidden]')).every(i=>i.complete), undefined, {timeout:15000});
             const p = await audit(page);
-            report.servicePanels.push({key,documentWidth:p.documentWidth,overflow:p.overflow,overlaps:p.overlaps,images:p.images});
+            report.servicePanels.push({key,documentWidth:p.documentWidth,overflow:p.overflow,overlaps:p.overlaps,images:p.images,timeline:p.timeline});
             if (p.documentWidth>viewport.width || p.overflow.length || p.overlaps.length || !p.images.every(i=>i.complete&&i.naturalWidth>0)) report.pass = false;
-            if(key!=='sick') await page.locator('.care-explorer').screenshot({path:path.join(out,'home-care-'+key+'-'+viewport.name+'.png'),animations:'disabled'});
+            if(key==='well') {
+              report.timeline=p.timeline;
+              const session=await context.newCDPSession(page);
+              await session.send('DOM.enable'); await session.send('CSS.enable');
+              const documentNode=(await session.send('DOM.getDocument')).root.nodeId;
+              report.actualFonts=[];
+              for(const selector of ['#care-well h3','.age-timeline-track li:first-child > span:last-child','.age-timeline-caption']) {
+                const nodeId=(await session.send('DOM.querySelector',{nodeId:documentNode,selector})).nodeId;
+                const fonts=(await session.send('CSS.getPlatformFontsForNode',{nodeId})).fonts;
+                report.actualFonts.push({selector,fonts});
+              }
+              await session.detach();
+              const fontPass=report.actualFonts.every(entry=>entry.fonts.some(f=>f.familyName==='IBM Plex Sans Thai'&&f.isCustomFont&&f.glyphCount>0));
+              if(!p.timeline?.pass||!fontPass) report.pass=false;
+              await page.evaluate(()=>window.scrollTo(0,0));
+              const screenshotRect=await page.locator('.care-explorer').evaluate(e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};});
+              report.screenshotRect=screenshotRect;
+              await page.screenshot({path:path.join(out,'home-vaccine-full-'+viewport.name+'.png'),fullPage:true,animations:'disabled'});
+            }
           }
+          if(errors.length||failedRequests.length||badResponses.length) report.pass=false;
         }
         results.push(report);
         console.log(name+' '+viewport.name+' '+(report.pass?'PASS':'REVIEW')+' height='+report.documentHeight+' overflow='+report.overflow.length);

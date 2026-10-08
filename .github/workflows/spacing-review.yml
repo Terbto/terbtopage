@@ -22,7 +22,7 @@ jobs:
         run: |
           npm install --no-save --no-package-lock playwright@1.62.1
           npx playwright install --with-deps --only-shell chromium
-      - name: Render six pages at three viewports
+      - name: Render vaccination timeline at desktop and mobile sizes
         run: node qa/spacing-render.cjs
       - uses: actions/upload-artifact@v7
         if: always()
