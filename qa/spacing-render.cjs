@@ -6,6 +6,8 @@ const crypto = require('node:crypto');
 
 const root = process.cwd();
 const out = path.join(root, 'qa-results');
+const reviewBase = (process.env.REVIEW_BASE_URL || 'http://127.0.0.1:8765').replace(/\/$/, '');
+const checkedSourceFiles = ['index.html','general-pediatrics/index.html','growth-hormone/index.html','doctor/index.html','contact/index.html','privacy/index.html','css/spacing.css','css/home-final.css','css/brand-refresh.css'];
 const routes = [
   ['homepage', '/index.html'],
   ['general', '/general-pediatrics/index.html'],
@@ -174,6 +176,8 @@ async function details(page, session) {
 
 (async () => {
   await fs.mkdir(out,{recursive:true});
+  const sourceHashes={};
+  for(const filename of checkedSourceFiles)sourceHashes[filename]=crypto.createHash('sha256').update(await fs.readFile(path.join(root,filename))).digest('hex');
   const server=http.createServer(async(req,res)=>{
     try {
       let pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
@@ -191,12 +195,20 @@ async function details(page, session) {
     for(const viewport of viewports) {
       const context=await browser.newContext({viewport:{width:viewport.width,height:viewport.height},deviceScaleFactor:1,isMobile:viewport.width<600,hasTouch:viewport.width<600});
       for(const [name,route] of routes) {
-        const page=await context.newPage(),errors=[],failedRequests=[],badResponses=[];
+        const page=await context.newPage(),errors=[],failedRequests=[],badResponses=[],observedSources=[],pendingHashes=[];
         page.on('pageerror',e=>errors.push(e.message));
         page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
         page.on('requestfailed',r=>failedRequests.push({url:r.url(),failure:r.failure()}));
-        page.on('response',r=>{if(r.status()>=400&&!r.url().endsWith('/favicon.ico'))badResponses.push({url:r.url(),status:r.status()});});
-        await page.goto('http://127.0.0.1:8765'+route,{waitUntil:'networkidle'});
+        page.on('response',r=>{
+          if(r.status()>=400&&!r.url().endsWith('/favicon.ico'))badResponses.push({url:r.url(),status:r.status()});
+          const sourceUrl=r.url().split('?')[0];
+          const filename=checkedSourceFiles.find(f=>reviewBase+'/'+f===sourceUrl);
+          if(filename)pendingHashes.push(r.body().then(bytes=>{
+            const sha256=crypto.createHash('sha256').update(bytes).digest('hex');
+            observedSources.push({path:filename,url:r.url(),status:r.status(),sha256,matchesReviewedSource:sha256===sourceHashes[filename]});
+          }));
+        });
+        await page.goto(reviewBase+route,{waitUntil:'networkidle'});
         await page.evaluate(()=>document.fonts.ready);
         const height=await page.evaluate(()=>document.documentElement.scrollHeight);
         for(let y=0;y<height;y+=viewport.height*.7){await page.evaluate(v=>window.scrollTo(0,v),y);await page.waitForTimeout(45);}
@@ -204,7 +216,7 @@ async function details(page, session) {
         await page.evaluate(()=>window.scrollTo(0,0));await page.waitForTimeout(350);
         const report=await audit(page);
         const session=await context.newCDPSession(page);await session.send('DOM.enable');await session.send('CSS.enable');
-        report.page=name;report.route=route;report.size=viewport.name;report.sourceCommit=process.env.GITHUB_SHA||null;
+        report.page=name;report.route=route;report.size=viewport.name;report.sourceCommit=process.env.GITHUB_SHA||null;report.publishedCommit=process.env.PUBLISHED_COMMIT||null;report.reviewedBaseUrl=reviewBase;
         report.details=await details(page,session);
         await page.screenshot({path:path.join(out,name+'-'+viewport.name+'.png'),fullPage:true,animations:'disabled'});
         report.linkStates=[await checkLinkStates(page,session,name,viewport.name,false)];
@@ -233,8 +245,10 @@ async function details(page, session) {
             }
           }
         }
-        report.errors=errors;report.failedRequests=failedRequests;report.badResponses=badResponses;
-        report.pass=report.viewport.width===viewport.width&&report.viewport.height===viewport.height&&report.documentWidth<=report.clientWidth&&report.fontReady&&!report.overflow.length&&!report.overlaps.length&&!errors.length&&!failedRequests.length&&!badResponses.length&&report.images.every(i=>i.complete&&i.naturalWidth>0)&&report.details.pass&&report.linkStates.every(s=>s.pass)&&report.servicePanels.every(p=>p.documentWidth<=p.clientWidth&&!p.overflow.length&&!p.overlaps.length&&p.details.pass&&(p.key!=='well'||p.timeline?.pass));
+        await Promise.all(pendingHashes);
+        report.errors=errors;report.failedRequests=failedRequests;report.badResponses=badResponses;report.observedSources=observedSources;
+        const sourcePass=observedSources.some(s=>s.path===route.slice(1))&&observedSources.every(s=>s.matchesReviewedSource);
+        report.pass=sourcePass&&report.viewport.width===viewport.width&&report.viewport.height===viewport.height&&report.documentWidth<=report.clientWidth&&report.fontReady&&!report.overflow.length&&!report.overlaps.length&&!errors.length&&!failedRequests.length&&!badResponses.length&&report.images.every(i=>i.complete&&i.naturalWidth>0)&&report.details.pass&&report.linkStates.every(s=>s.pass)&&report.servicePanels.every(p=>p.documentWidth<=p.clientWidth&&!p.overflow.length&&!p.overlaps.length&&p.details.pass&&(p.key!=='well'||p.timeline?.pass));
         results.push(report);failed||=!report.pass;
         console.log(name+' '+viewport.name+' '+(report.pass?'PASS':'REVIEW')+' width='+report.documentWidth+'/'+report.clientWidth+' arrowStates='+report.linkStates.reduce((n,s)=>n+s.results.length,0)+' emoji='+report.details.emoji.length);
         await fs.writeFile(path.join(out,'render-audit.json'),JSON.stringify({browser:browser.version(),generatedAt:new Date().toISOString(),results},null,2));
@@ -242,9 +256,7 @@ async function details(page, session) {
       }
       await context.close();
     }
-    const hashes={};
-    for(const filename of ['index.html','general-pediatrics/index.html','growth-hormone/index.html','doctor/index.html','contact/index.html','privacy/index.html','css/spacing.css','css/home-final.css','css/brand-refresh.css'])hashes[filename]=crypto.createHash('sha256').update(await fs.readFile(path.join(root,filename))).digest('hex');
-    await fs.writeFile(path.join(out,'rendered-source-sha256.json'),JSON.stringify(hashes,null,2));
+    await fs.writeFile(path.join(out,'rendered-source-sha256.json'),JSON.stringify(sourceHashes,null,2));
   }finally{if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}
   if(failed)process.exitCode=1;
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -11,6 +11,9 @@ jobs:
   render:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
+    env:
+      REVIEW_BASE_URL: https://terbto.github.io/terbtopage/
+      PUBLISHED_COMMIT: 30e231d231df6783d4e8484a43f008ae6be48a19
     steps:
       - uses: actions/checkout@v5
         with:
