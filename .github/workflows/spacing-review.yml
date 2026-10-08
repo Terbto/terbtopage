@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 12
     env:
       REVIEW_BASE_URL: https://terbto.github.io/terbtopage/
-      PUBLISHED_COMMIT: 30e231d231df6783d4e8484a43f008ae6be48a19
+      PUBLISHED_COMMIT: f2c0b18a4ceec3c3fc8ff3aa988449e3d4d082c9
     steps:
       - uses: actions/checkout@v5
         with:
