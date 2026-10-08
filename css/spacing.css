@@ -57,7 +57,7 @@ main .heading-with-emoji {
   transform: translateY(.22em);
   text-decoration: none;
 }
-.heading-with-emoji .heading-label { min-width: 0; }
+.heading-with-emoji .heading-label { min-width: 0; text-wrap: balance; }
 .heading-with-emoji::after { grid-column: 1 / -1; }
 
 /* Homepage: maintain the existing sections and photograph treatment. */
