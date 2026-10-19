@@ -153,6 +153,19 @@ main .heading-with-emoji {
   line-height: 1.6;
   text-align: center;
 }
+.care-age-illustration {
+  width: min(100%, 520px);
+  min-width: 0;
+  margin: 0;
+  align-self: center;
+  justify-self: center;
+}
+.care-age-illustration img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
 .doctor-story { padding-block: var(--section-space); gap: var(--content-gap); }
 .doctor-copy .section-label { margin-bottom: var(--space-24); }
 .doctor-copy h2 > span:not(.doctor-surname) { margin-top: var(--space-16); }
