@@ -457,3 +457,7 @@ body.is-leaving{opacity:.02}
 @media(max-width:860px){
   .site-header .mobile-nav{position:absolute;top:100%}
 }
+
+/* Targeted supporting link for the growth care panel — 2026-10-19 */
+.care-copy .care-secondary-link{display:flex;width:max-content;margin-top:14px;font-size:.94rem}
+@media(max-width:600px){.care-copy .care-secondary-link{margin-top:12px;font-size:.9rem}}
