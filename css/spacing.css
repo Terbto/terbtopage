@@ -338,3 +338,7 @@ main .heading-with-emoji {
   .arrival-grid { gap: var(--space-32); }
   .privacy-copy section { padding-block: var(--space-32); }
 }
+
+
+/* Pediatric Growth Progress Chart — 2026-10-24 */
+.growth-trend-mark img { display: block; width: min(100%, 640px); height: auto; margin-inline: auto; }
