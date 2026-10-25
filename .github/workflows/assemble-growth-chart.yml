@@ -22,8 +22,10 @@ jobs:
         run: echo "84b553068129c5485a5949c4ebc29fbed22362e7c8c3041e022197e5e064de23  .image-parts/growth-00b.b64" | sha256sum -c -
       - name: Check chunk 01
         run: echo "3fd9a24a80d0c483edc8ef1cc4e026fb6a0ec6d1a6c12e29c1bd965a28fc7165  .image-parts/growth-01.b64" | sha256sum -c -
-      - name: Check chunk 02
-        run: echo "a149da104e2c2f47797ee25151fc16edecca68185e025734506fba488dd6194b  .image-parts/growth-02.b64" | sha256sum -c -
+      - name: Check chunk 02a
+        run: echo "ab6a5e33a10537319c5b0aee2057ffd0e021bb02a3a8eddadb24aac721815598  .image-parts/growth-02a.b64" | sha256sum -c -
+      - name: Check chunk 02b
+        run: echo "cf6bc45f49e025aac60039d6e61a9ef5c92e52545df08e17b6cb539f1d1d0417  .image-parts/growth-02b.b64" | sha256sum -c -
       - name: Check chunk 03
         run: echo "584d2fdea3a18489336f78c8ccfd2203420089476b6624fec18d8b47e0f69631  .image-parts/growth-03.b64" | sha256sum -c -
       - name: Check chunk 04
@@ -39,7 +41,8 @@ jobs:
               '.image-parts/growth-00a.b64',
               '.image-parts/growth-00b.b64',
               '.image-parts/growth-01.b64',
-              '.image-parts/growth-02.b64',
+              '.image-parts/growth-02a.b64',
+              '.image-parts/growth-02b.b64',
               '.image-parts/growth-03.b64',
               '.image-parts/growth-04.b64',
           ]
@@ -53,6 +56,7 @@ jobs:
           out = Path('images/illustrations/pediatric-growth-progress-chart-800.webp')
           out.parent.mkdir(parents=True, exist_ok=True)
           out.write_bytes(data)
+          print(f'verified {out}: {len(data)} bytes sha256={actual}')
           PY
 
       - name: Commit assembled asset and cleanup
