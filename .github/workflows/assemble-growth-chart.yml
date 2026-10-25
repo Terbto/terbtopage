@@ -45,3 +45,5 @@ jobs:
           git add images/illustrations/pediatric-growth-progress-chart-800.webp .image-parts
           git commit -m "25 ต.ค. 2569 — เพิ่มกราฟการเจริญเติบโตความละเอียดสูง"
           git push
+
+# rerun-after-complete-chunks
