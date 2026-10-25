@@ -216,6 +216,10 @@ main .heading-with-emoji {
 .growth-symptom-no { margin-bottom: var(--space-16); }
 .growth-symptom-card .symptom-tags { margin-top: var(--space-24); gap: var(--space-12); }
 .growth-symptom-card > p { margin-top: var(--space-24); line-height: 1.9; }
+/* Share the space between the cards and chart instead of stacking full section padding. */
+.growth-page .growth-topics { padding-bottom: var(--space-48); }
+.growth-page .growth-trend { padding-top: var(--space-32); }
+.growth-page .growth-trend-mark { margin-bottom: var(--space-16); }
 .growth-trend-grid { gap: var(--content-gap); }
 .growth-trend-grid > div::after { content: none; }
 .growth-trend-grid > p { padding-top: var(--space-24); line-height: 1.9; }
@@ -291,6 +295,7 @@ main .heading-with-emoji {
 
 @media (max-width: 860px) {
   :root { --section-space: var(--space-80); --content-gap: var(--space-48); }
+  .growth-page .growth-topics { padding-bottom: var(--space-32); }
   .care-panel { padding: var(--space-32); }
   .privacy-layout { gap: var(--space-32); padding-top: var(--space-32); }
 }
@@ -326,6 +331,8 @@ main .heading-with-emoji {
   .symptom-tags { gap: var(--space-12); }
   .well-child-split { margin-top: var(--space-32); gap: var(--space-32); }
   .growth-symptom-card { padding: var(--space-24) 20px; }
+  .growth-page .growth-topics { padding-bottom: var(--space-24); }
+  .growth-page .growth-trend { padding-top: var(--space-24); }
   .growth-trend-grid { gap: var(--space-32); }
   .growth-trend-mark { margin-bottom: var(--space-24); }
   .growth-trend-mark svg { width: 232px; }
