@@ -1,0 +1,48 @@
+name: Assemble growth chart asset
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/assemble-growth-chart.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Assemble high-quality WebP
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p images/illustrations
+          cat .image-parts/growth-00.b64               .image-parts/growth-01.b64               .image-parts/growth-02.b64               .image-parts/growth-03.b64               .image-parts/growth-04.b64             | tr -d '\n\r'             | base64 --decode             > images/illustrations/pediatric-growth-progress-chart-800.webp
+
+          bytes="$(stat -c%s images/illustrations/pediatric-growth-progress-chart-800.webp)"
+          echo "asset bytes: $bytes"
+          test "$bytes" -eq 44648
+
+          python3 - <<'PY'
+          from PIL import Image
+          p='images/illustrations/pediatric-growth-progress-chart-800.webp'
+          im=Image.open(p)
+          assert im.size == (800, 533), im.size
+          im.verify()
+          print('verified:', p, '800x533')
+          PY
+
+      - name: Commit assembled asset and remove temporary parts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -rf .image-parts
+          git add images/illustrations/pediatric-growth-progress-chart-800.webp .image-parts
+          git commit -m "25 ต.ค. 2569 — เพิ่มกราฟการเจริญเติบโตความละเอียดสูง"
+          git push
