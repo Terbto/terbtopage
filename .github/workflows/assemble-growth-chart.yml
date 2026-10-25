@@ -16,27 +16,38 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Assemble high-quality WebP
+      - name: Assemble and verify image
         shell: bash
         run: |
-          set -euo pipefail
-          mkdir -p images/illustrations
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64, hashlib
 
-          cat .image-parts/growth-00a.b64 \
-              .image-parts/growth-00b.b64               .image-parts/growth-01.b64               .image-parts/growth-02.b64               .image-parts/growth-03.b64               .image-parts/growth-04.b64             | tr -d '\n\r'             | base64 --decode             > images/illustrations/pediatric-growth-progress-chart-800.webp
+          parts = [
+              '.image-parts/growth-00a.b64',
+              '.image-parts/growth-00b.b64',
+              '.image-parts/growth-01.b64',
+              '.image-parts/growth-02.b64',
+              '.image-parts/growth-03.b64',
+              '.image-parts/growth-04.b64',
+          ]
+          encoded = ''.join(Path(p).read_text().strip() for p in parts)
+          assert len(encoded) == 59532, len(encoded)
 
-          bytes="$(stat -c%s images/illustrations/pediatric-growth-progress-chart-800.webp)"
-          echo "asset bytes: $bytes"
-          test "$bytes" -eq 44648
+          data = base64.b64decode(encoded, validate=True)
+          assert len(data) == 44648, len(data)
 
-          actual_sha="$(sha256sum images/illustrations/pediatric-growth-progress-chart-800.webp | awk '{print $1}')"
-          expected_sha="7b7f6d10e31cb9b2754ee8e5f630b4b446f615deb86a52068cecf60245d8c704"
-          echo "asset sha256: $actual_sha"
-          test "$actual_sha" = "$expected_sha"
+          actual = hashlib.sha256(data).hexdigest()
+          expected = '7b7f6d10e31cb9b2754ee8e5f630b4b446f615deb86a52068cecf60245d8c704'
+          assert actual == expected, (actual, expected)
 
-          file images/illustrations/pediatric-growth-progress-chart-800.webp
+          out = Path('images/illustrations/pediatric-growth-progress-chart-800.webp')
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_bytes(data)
+          print(f'verified {out}: {len(data)} bytes sha256={actual}')
+          PY
 
-      - name: Commit assembled asset and remove temporary parts
+      - name: Commit assembled asset and cleanup
         shell: bash
         run: |
           set -euo pipefail
@@ -46,7 +57,3 @@ jobs:
           git add images/illustrations/pediatric-growth-progress-chart-800.webp .image-parts
           git commit -m "25 ต.ค. 2569 — เพิ่มกราฟการเจริญเติบโตความละเอียดสูง"
           git push
-
-# rerun-after-complete-chunks
-
-# use-split-chunk-00
