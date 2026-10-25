@@ -16,13 +16,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check chunk 00a
+        run: echo "eaa6c8de1336339d9e268841874f91c84a3be8c0da658f75e9d9a2142ba6b121  .image-parts/growth-00a.b64" | sha256sum -c -
+      - name: Check chunk 00b
+        run: echo "84b553068129c5485a5949c4ebc29fbed22362e7c8c3041e022197e5e064de23  .image-parts/growth-00b.b64" | sha256sum -c -
+      - name: Check chunk 01
+        run: echo "3fd9a24a80d0c483edc8ef1cc4e026fb6a0ec6d1a6c12e29c1bd965a28fc7165  .image-parts/growth-01.b64" | sha256sum -c -
+      - name: Check chunk 02
+        run: echo "a149da104e2c2f47797ee25151fc16edecca68185e025734506fba488dd6194b  .image-parts/growth-02.b64" | sha256sum -c -
+      - name: Check chunk 03
+        run: echo "584d2fdea3a18489336f78c8ccfd2203420089476b6624fec18d8b47e0f69631  .image-parts/growth-03.b64" | sha256sum -c -
+      - name: Check chunk 04
+        run: echo "eaa85503c0f696f6ccf29eb1997c22859a26b97027de375f948433b193c7db02  .image-parts/growth-04.b64" | sha256sum -c -
+
       - name: Assemble and verify image
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import base64, hashlib
-
           parts = [
               '.image-parts/growth-00a.b64',
               '.image-parts/growth-00b.b64',
@@ -31,20 +43,16 @@ jobs:
               '.image-parts/growth-03.b64',
               '.image-parts/growth-04.b64',
           ]
-          encoded = ''.join(Path(p).read_text().strip() for p in parts)
+          encoded = ''.join(Path(p).read_text() for p in parts)
           assert len(encoded) == 59532, len(encoded)
-
           data = base64.b64decode(encoded, validate=True)
           assert len(data) == 44648, len(data)
-
           actual = hashlib.sha256(data).hexdigest()
           expected = '7b7f6d10e31cb9b2754ee8e5f630b4b446f615deb86a52068cecf60245d8c704'
           assert actual == expected, (actual, expected)
-
           out = Path('images/illustrations/pediatric-growth-progress-chart-800.webp')
           out.parent.mkdir(parents=True, exist_ok=True)
           out.write_bytes(data)
-          print(f'verified {out}: {len(data)} bytes sha256={actual}')
           PY
 
       - name: Commit assembled asset and cleanup
