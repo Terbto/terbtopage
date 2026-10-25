@@ -21,20 +21,19 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p images/illustrations
+
           cat .image-parts/growth-00.b64               .image-parts/growth-01.b64               .image-parts/growth-02.b64               .image-parts/growth-03.b64               .image-parts/growth-04.b64             | tr -d '\n\r'             | base64 --decode             > images/illustrations/pediatric-growth-progress-chart-800.webp
 
           bytes="$(stat -c%s images/illustrations/pediatric-growth-progress-chart-800.webp)"
           echo "asset bytes: $bytes"
           test "$bytes" -eq 44648
 
-          python3 - <<'PY'
-          from PIL import Image
-          p='images/illustrations/pediatric-growth-progress-chart-800.webp'
-          im=Image.open(p)
-          assert im.size == (800, 533), im.size
-          im.verify()
-          print('verified:', p, '800x533')
-          PY
+          actual_sha="$(sha256sum images/illustrations/pediatric-growth-progress-chart-800.webp | awk '{print $1}')"
+          expected_sha="7b7f6d10e31cb9b2754ee8e5f630b4b446f615deb86a52068cecf60245d8c704"
+          echo "asset sha256: $actual_sha"
+          test "$actual_sha" = "$expected_sha"
+
+          file images/illustrations/pediatric-growth-progress-chart-800.webp
 
       - name: Commit assembled asset and remove temporary parts
         shell: bash
